@@ -42,11 +42,12 @@ export const App = () => {
     }
 
     // безпечна генерація нового id
-    const maxId = todos.length > 0 ? Math.max(...todos.map(t => t.id)) : 0;
+    const maxId =
+      todos.length > 0 ? Math.max(...todos.map(todo => todo.id)) : 0;
 
     // знаходимо вибраного користувача
     const selectedUser: User | undefined = usersFromServer.find(
-      u => u.id === userId,
+      user => user.id === userId,
     );
 
     if (!selectedUser) {
