@@ -5,9 +5,10 @@ import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 
 import { TodoList } from './components/TodoList/TodoList';
+import { Todo, User } from './types';
 
 export const App = () => {
-  const [todos, setTodos] = useState(todosFromServer);
+  const [todos, setTodos] = useState<Todo[]>(todosFromServer);
 
   const [title, setTitle] = useState('');
   const [userId, setUserId] = useState(0);
@@ -40,19 +41,30 @@ export const App = () => {
       return;
     }
 
-    const maxId = Math.max(...todos.map(todo => todo.id));
-    const user = usersFromServer.find(u => u.id === userId)!;
+    // безпечна генерація нового id
+    const maxId = todos.length > 0 ? Math.max(...todos.map(t => t.id)) : 0;
 
-    const newTodo = {
+    // знаходимо вибраного користувача
+    const selectedUser: User | undefined = usersFromServer.find(
+      u => u.id === userId,
+    );
+
+    if (!selectedUser) {
+      return;
+    }
+
+    // створюємо новий todo з валідним user
+    const newTodo: Todo = {
+      userId: selectedUser.id,
       id: maxId + 1,
-      title: title.trim(),
+      title,
       completed: false,
-      userId,
-      user,
+      user: selectedUser,
     };
 
     setTodos([...todos, newTodo]);
 
+    // очищаємо форму
     setTitle('');
     setUserId(0);
     setShowTitleError(false);
